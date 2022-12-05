@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os
+import sys
+
+os.chdir(sys.path[0])
+print("Current work directory -> %s" % os.getcwd())
+
 import random
 from torch.utils.tensorboard import SummaryWriter
 
@@ -107,7 +113,8 @@ if __name__ == "__main__":
     batch_size = 64
     spectrogram_size = generate_sample()[1].shape[0]
 
-    device = torch.device("cuda")
+    # device = torch.device("cuda")
+    device = torch.device("cpu")
     writer = SummaryWriter()
 
     # Set up trainer & evaluator

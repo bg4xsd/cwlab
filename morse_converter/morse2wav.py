@@ -22,3 +22,9 @@ import morse_sound as ms
 
 os.chdir(sys.path[0])
 print("Current work directory -> %s" % os.getcwd())
+
+# All times in seconds
+dot_time = 0.050
+dash_time = dot_time*3
+inter_elem_time = dot_time
+space_time = dot_time*7
