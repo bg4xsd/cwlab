@@ -1,1 +1,1 @@
- nohup  /bin/python /home/quant/myWork/cwlab/nn-morse/main.py > test.log 2>&1 &   
+ nohup  /bin/python /home/quant/myWork/cwlab/nn-morse_2.0/main.py > test.log 2>&1 &   

@@ -128,7 +128,7 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(
         Dataset(),
         batch_size=batch_size,
-        num_workers=4,
+        num_workers=8,
         collate_fn=collate_fn_pad,
     )
 
