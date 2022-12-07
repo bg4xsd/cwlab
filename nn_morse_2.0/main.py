@@ -113,8 +113,8 @@ if __name__ == "__main__":
     batch_size = 64
     spectrogram_size = generate_sample()[1].shape[0]
 
-    # device = torch.device("cuda")
-    device = torch.device("cpu")
+    device = torch.device("cuda")
+    # device = torch.device("cpu")
     writer = SummaryWriter()
 
     # Set up trainer & evaluator
