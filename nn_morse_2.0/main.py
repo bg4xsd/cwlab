@@ -123,17 +123,19 @@ if __name__ == "__main__":
 
     # Lower learning rate to 1e-4 after about 1500 epochs
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    #optimizer = optim.Adam(model.parameters(), lr=1e-4)
     ctc_loss = nn.CTCLoss()
 
     train_loader = torch.utils.data.DataLoader(
         Dataset(),
         batch_size=batch_size,
-        num_workers=8,
+        num_workers=6,
         collate_fn=collate_fn_pad,
     )
 
     random.seed(0)
 
+    #epoch = 1500 # modify with lr=1e-4
     epoch = 0
 
     # Resume training
