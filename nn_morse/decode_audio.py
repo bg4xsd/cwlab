@@ -11,13 +11,24 @@ from scipy import signal
 from main import Net, num_tags, prediction_to_str
 from morse import ALPHABET, SAMPLE_FREQ, get_spectrogram
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model")
-    parser.add_argument("input")
-    args = parser.parse_args()
+# For example
+# python decode_audio.py --model ./models/001750.pt ../CallCQ_pitch416_wpm17_noise83_amplitude36.wav
 
-    rate, data = scipy.io.wavfile.read(args.input)
+if __name__ == "__main__":
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--model")
+        parser.add_argument("input")
+        args = parser.parse_args()
+        wavfile = args.input
+        modelfile = args.model
+        print("\n")
+    except:
+        modelfile = "./models/001750.pt"
+        #wavfile = "./testaudio.wav"
+        #wavfile = "../data/cwWithWhiteNoiseSuper.wav"
+
+    rate, data = scipy.io.wavfile.read(wavfile)
 
     # Resample and rescale
     length = len(data) / rate
@@ -35,7 +46,7 @@ if __name__ == "__main__":
     # Load model
     device = torch.device("cpu")
     model = Net(num_tags, spectrogram_size)
-    model.load_state_dict(torch.load(args.model, map_location=device))
+    model.load_state_dict(torch.load(modelfile, map_location=device))
     model.eval()
 
     # Run model on audio
@@ -53,13 +64,13 @@ if __name__ == "__main__":
     # Only show letters with > 5% prob somewhere in the sequence
     labels = np.asarray(["<blank>", "<space>"] + list(ALPHABET[1:]))
     sum_prob = np.max(y_pred_l, axis=0)
-    show_letters = sum_prob > .05
+    show_letters = sum_prob > 0.05
 
-    plt.figure()
-    plt.subplot(2, 1, 1)
-    plt.pcolormesh(spec_orig)
-    plt.subplot(2, 1, 2)
-    plt.plot(y_pred_l[:, show_letters])
-    plt.legend(labels[show_letters])
-    plt.autoscale(enable=True, axis='x', tight=True)
-    plt.show()
+    # plt.figure()
+    # plt.subplot(2, 1, 1)
+    # plt.pcolormesh(spec_orig)
+    # plt.subplot(2, 1, 2)
+    # plt.plot(y_pred_l[:, show_letters])
+    # plt.legend(labels[show_letters])
+    # plt.autoscale(enable=True, axis='x', tight=True)
+    # plt.show()

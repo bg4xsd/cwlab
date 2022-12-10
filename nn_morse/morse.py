@@ -1,4 +1,20 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+'''
+@File    :  morse.py
+@Time    :  :2022/12/10
+@Author  :   Dr. Cat Lu / BFcat
+@Version :   1.0
+@Contact :   bfcat@live.cn
+@Site    :   https://bg4xsd.github.io
+@License :   (C)MIT License
+@Desc    :   This is a part of project CWLab, more details can be found on the site.
+'''
+
+import os, sys
+
+os.chdir(sys.path[0])
+print("Current work directory -> %s" % os.getcwd())
 
 from scipy import signal
 import numpy as np
@@ -6,22 +22,49 @@ import random
 
 SAMPLE_FREQ = 2000  # 2 Khz
 
+# 60 Chars dict
 MORSE_CODE_DICT = {
-    'A': '.-', 'B': '-...',
-    'C': '-.-.', 'D': '-..', 'E': '.',
-    'F': '..-.', 'G': '--.', 'H': '....',
-    'I': '..', 'J': '.---', 'K': '-.-',
-    'L': '.-..', 'M': '--', 'N': '-.',
-    'O': '---', 'P': '.--.', 'Q': '--.-',
-    'R': '.-.', 'S': '...', 'T': '-',
-    'U': '..-', 'V': '...-', 'W': '.--',
-    'X': '-..-', 'Y': '-.--', 'Z': '--..',
-    '1': '.----', '2': '..---', '3': '...--',
-    '4': '....-', '5': '.....', '6': '-....',
-    '7': '--...', '8': '---..', '9': '----.',
+    'A': '.-',
+    'B': '-...',
+    'C': '-.-.',
+    'D': '-..',
+    'E': '.',
+    'F': '..-.',
+    'G': '--.',
+    'H': '....',
+    'I': '..',
+    'J': '.---',
+    'K': '-.-',
+    'L': '.-..',
+    'M': '--',
+    'N': '-.',
+    'O': '---',
+    'P': '.--.',
+    'Q': '--.-',
+    'R': '.-.',
+    'S': '...',
+    'T': '-',
+    'U': '..-',
+    'V': '...-',
+    'W': '.--',
+    'X': '-..-',
+    'Y': '-.--',
+    'Z': '--..',
+    '1': '.----',
+    '2': '..---',
+    '3': '...--',
+    '4': '....-',
+    '5': '.....',
+    '6': '-....',
+    '7': '--...',
+    '8': '---..',
+    '9': '----.',
     '0': '-----',
-    '.': '.-.-.-', ',': '--..--', '?': '..--..',
-    '=': '-...-', '+': '.-.-.',
+    '.': '.-.-.-',
+    ',': '--..--',
+    '?': '..--..',
+    '=': '-...-',
+    '+': '.-.-.',
 }
 ALPHABET = " " + "".join(MORSE_CODE_DICT.keys())
 
@@ -32,13 +75,19 @@ def get_spectrogram(samples):
     return s
 
 
-def generate_sample(text_len=10, pitch=500, wpm=20, noise_power=1, amplitude=100, s=None):
+def generate_sample(
+    text_len=10, pitch=500, wpm=20, noise_power=1, amplitude=100, s=None
+):
     assert pitch < SAMPLE_FREQ / 2  # Nyquist
 
     # Reference word is PARIS, 50 dots long
     dot = (60 / wpm) / 50 * SAMPLE_FREQ
 
     # Add some noise on the length of dash and dot
+    #
+    # np.random.randn(np.random.randint(4, 7))
+    # More difficult for NN
+    #
     def get_dot():
         scale = np.clip(np.random.normal(1, 0.2), 0.5, 2.0)
         return int(dot * scale)
@@ -103,15 +152,26 @@ if __name__ == "__main__":
 
     length = random.randrange(10, 20)
     pitch = random.randrange(100, 950)
-    wpm = random.randrange(10, 40)
+    wpm = random.randrange(10, 30)
     noise_power = random.randrange(0, 200)
     amplitude = random.randrange(10, 150)
 
-    s = "HELLO, WORLD"
+    s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
     samples = samples.astype(np.float32)
-    write("morse.wav", SAMPLE_FREQ, samples)
-
+    fname = (
+        "CallCQ_pitch"
+        + str(pitch)
+        + "_wpm"
+        + str(wpm)
+        + "_noise"
+        + str(noise_power)
+        + "_amplitude"
+        + str(amplitude)
+        + ".wav"
+    )
+    write(fname, SAMPLE_FREQ, samples)
+    write("testaudio.wav", SAMPLE_FREQ, samples)
     print(f"pitch: {pitch} wpm: {wpm} noise: {noise_power} amplitude: {amplitude} {y}")
 
     plt.figure()
