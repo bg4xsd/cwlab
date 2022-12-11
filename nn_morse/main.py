@@ -146,10 +146,10 @@ if __name__ == "__main__":
 
     model.train()
     while epoch <= 6000:
-        if epoch % 1500 == 0:  # 每迭代5次，更新一次学习率
+        if epoch % 200 == 0:  # 每迭代5次，更新一次学习率
             for params in optimizer.param_groups:
                 # 遍历Optimizer中的每一组参数，将该组参数的学习率 * 0.9
-                params['lr'] *= 0.5
+                params['lr'] *= 0.9
                 # params['weight_decay'] = 0.5  # 当然也可以修改其他属性
         for (input_lengths, output_lengths, x, y) in train_loader:
             x, y = x.to(device), y.to(device)
