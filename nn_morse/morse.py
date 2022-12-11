@@ -122,6 +122,7 @@ def generate_sample(
     # The space between two signs of the same character is equal to the length of one dot.
     # The space between two characters of the same word is three times the length of a dot.
     # The space between two words is seven times the length of a dot (or more).
+    s = s.upper()
     for c in s:
         if c == ' ':
             out.append(np.zeros(7 * get_dot()))
