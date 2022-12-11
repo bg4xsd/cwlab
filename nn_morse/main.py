@@ -89,7 +89,9 @@ class Dataset(data.Dataset):
         return 2048
 
     def __getitem__(self, index):
-        length = random.randrange(10, 20)
+        # Modify here, for input cw length, default recomends is  10~20,
+        # For real audio data, buffer is short and use 1~10
+        length = random.randrange(1, 20)
         pitch = random.randrange(100, 950)
         wpm = random.randrange(10, 40)
         noise_power = random.randrange(0, 200)
@@ -111,7 +113,7 @@ def collate_fn_pad(batch):
 
 if __name__ == "__main__":
     batch_size = 64
-    spectrogram_size = generate_sample(text_len=random.randint(1, 10))[1].shape[0]
+    spectrogram_size = generate_sample()[1].shape[0]
 
     device = torch.device("cuda")
     # device = torch.device("cpu")
@@ -129,7 +131,7 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(
         Dataset(),
         batch_size=batch_size,
-        num_workers=6,
+        num_workers=4,
         collate_fn=collate_fn_pad,
     )
 
@@ -143,7 +145,12 @@ if __name__ == "__main__":
         model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
 
     model.train()
-    while epoch <= 2500:
+    while epoch <= 6000:
+        if epoch % 1500 == 0:  # 每迭代5次，更新一次学习率
+            for params in optimizer.param_groups:
+                # 遍历Optimizer中的每一组参数，将该组参数的学习率 * 0.9
+                params['lr'] *= 0.5
+                # params['weight_decay'] = 0.5  # 当然也可以修改其他属性
         for (input_lengths, output_lengths, x, y) in train_loader:
             x, y = x.to(device), y.to(device)
 
