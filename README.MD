@@ -12,6 +12,6 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;Also, I'd like to add some features on code generating, then use it with matlab, the new code will be collected in  CWlab. Here, ml_morse, nn_morse and dsp_morse are using different technical roadmap. In general,  I will try to implement realtime audio input, and with realtime text message as output.
 
-Just for fun,  keep it simple.
+Just for fun,  keep it simple. 1
 
 By BFcat @  2022.12.10
