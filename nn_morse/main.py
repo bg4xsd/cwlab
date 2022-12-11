@@ -111,7 +111,7 @@ def collate_fn_pad(batch):
 
 if __name__ == "__main__":
     batch_size = 64
-    spectrogram_size = generate_sample()[1].shape[0]
+    spectrogram_size = generate_sample(text_len=random.randint(1, 10))[1].shape[0]
 
     device = torch.device("cuda")
     # device = torch.device("cpu")
@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     # Lower learning rate to 1e-4 after about 1500 epochs
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
-    #optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    # optimizer = optim.Adam(model.parameters(), lr=1e-4)
     ctc_loss = nn.CTCLoss()
 
     train_loader = torch.utils.data.DataLoader(
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     random.seed(0)
 
-    #epoch = 1500 # modify with lr=1e-4
+    # epoch = 1500 # modify with lr=1e-4
     epoch = 0
 
     # Resume training
@@ -143,7 +143,7 @@ if __name__ == "__main__":
         model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
 
     model.train()
-    while epoch <= 1500:
+    while epoch <= 2500:
         for (input_lengths, output_lengths, x, y) in train_loader:
             x, y = x.to(device), y.to(device)
 

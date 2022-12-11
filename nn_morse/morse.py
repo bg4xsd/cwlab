@@ -65,6 +65,7 @@ MORSE_CODE_DICT = {
     '?': '..--..',
     '=': '-...-',
     '+': '.-.-.',
+    # '/': '-..-.',
 }
 ALPHABET = " " + "".join(MORSE_CODE_DICT.keys())
 
@@ -73,6 +74,14 @@ def get_spectrogram(samples):
     window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
     _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
     return s
+
+
+text_len = 10
+pitch = 500
+wpm = 20
+noise_power = 1
+amplitude = 100
+s = None
 
 
 def generate_sample(
@@ -99,9 +108,13 @@ def generate_sample(
 
     # Create random string that doesn't start or end with a space
     if s is None:
-        s1 = ''.join(random.choices(ALPHABET, k=text_len - 2))
-        s2 = ''.join(random.choices(ALPHABET[1:], k=2))
-        s = s2[0] + s1 + s2[1]
+        if text_len == 1:
+            s1 = ''.join(random.choices(ALPHABET, k=1))
+            s = s1
+        else:
+            s1 = ''.join(random.choices(ALPHABET, k=text_len - 2))
+            s2 = ''.join(random.choices(ALPHABET[1:], k=2))
+            s = s2[0] + s1 + s2[1]
 
     out = []
     out.append(np.zeros(5 * get_dot()))
