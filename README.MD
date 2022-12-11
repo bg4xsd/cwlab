@@ -10,8 +10,8 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;**morse-datase**t is another open source project by souryadey, almost 5 year ago, which is very useful, too. He suggests a method to distinguish 0 and 1 in morse code, by using stochastical method. More detailed introduction can be found at <https://github.com/souryadey/morse-dataset>.
 
-&nbsp;&nbsp;&nbsp;&nbsp;Also, I'd like to add some features on code generating, then use it with matlab, the new code will be collected in  CWlab. Here, ml_morse, nn_morse and dsp_morse are using different technical roadmap. In general,  I will try to implement realtime audio input, and with realtime text message as output.
+&nbsp;&nbsp;&nbsp;&nbsp;Also, I'd like to add some features on code generating, then use it with matlab, the new code will be collected in  CWlab. Here, ml, nn and dsp are to be used, different technical roadmap. In general,  I will try to implement realtime audio input, and with realtime text message as output.
 
-Just for fun,  keep it simple. 1
+Just for fun,  keep it simple.
 
 By BFcat @  2022.12.10
