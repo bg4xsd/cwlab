@@ -35,7 +35,8 @@ def decoder(modelfile, data):
     spectrogram_size = spec.shape[0]
 
     # Load model
-    device = torch.device("cpu")
+    # device = torch.device("cpu")
+    device = torch.device("cuda")
     model = Net(num_tags, spectrogram_size)
     model.load_state_dict(torch.load(modelfile, map_location=device))
     model.eval()
@@ -115,11 +116,14 @@ if __name__ == "__main__":
     # wavfile = args.input
     # modelfile = args.model
 
-    modelfile = "./models/002000.pt"
+    modelfile = "../sounds/demo_NNmodel_001750.pt"
+    modelfilenew = "../sounds/demo_Len1-20_005390.pt"
+
     # wavfile = "../sounds/testaudio.wav"
     wavfile = "../sounds/demo_with_mobile_sound.wav"
 
     decoder_file(modelfile, wavfile)
+    decoder_file(modelfilenew, wavfile)
 
     # python decode_audio.py --model ./models/001750.pt ../CallCQ_pitch416_wpm17_noise83_amplitude36.wav
     # wavfile = "../data/cwWithWhiteNoiseSuper.wav"
