@@ -145,12 +145,12 @@ if __name__ == "__main__":
         model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
 
     model.train()
-    while epoch <= 6000:
-        if epoch % 200 == 0:   # every 1500 epoch, update lr rate
-            for params in optimizer.param_groups:
-                # Find in the params list，update the lr = lr * 0.9
-                params['lr'] *= 0.
-                # params['weight_decay'] = 0.5  # Others
+    while epoch <= 2000:
+        # if epoch % 200 == 0:   # every 1500 epoch, update lr rate
+        #     for params in optimizer.param_groups:
+        #         # Find in the params list，update the lr = lr * 0.9
+        #         params['lr'] *= 0.
+        #         # params['weight_decay'] = 0.5  # Others
         for (input_lengths, output_lengths, x, y) in train_loader:
             x, y = x.to(device), y.to(device)
 

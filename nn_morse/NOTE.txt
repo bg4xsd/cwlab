@@ -1,0 +1,24 @@
+
+Before you start to run the code on Tencent Clould GPU server,
+
+1. Change the right control:
+    sudo chmod a+rw -R /usr/local/miniconda3
+    sudo chmod a+rw -R /home/ubuntu/.conda
+    sudo chmod a+rw -R /home/ubuntu/.condarc
+
+    find the run.sh file 
+
+    chmod a+x run.sh
+
+
+2. Install or Update some packages
+    conda install tensorboar scipy
+
+3.  Run in background
+
+    nohup python main.py &
+
+4. If you use run.sh in upper level directory, it works,too.I have the code in main.py, below, it will change the working directory
+
+    os.chdir(sys.path[0])
+    print("Current work directory -> %s" % os.getcwd())cd 
