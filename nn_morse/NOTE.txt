@@ -12,7 +12,7 @@ Before you start to run the code on Tencent Clould GPU server,
 
 
 2. Install or Update some packages
-    conda install tensorboar scipy
+    conda install tensorboar scipy matplotlib
 
     In my env, tensorboard 2.6.0 is installed,  
     # Say need to upgrade torch-tb-profiler, and call command:

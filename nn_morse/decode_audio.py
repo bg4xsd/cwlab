@@ -115,9 +115,9 @@ if __name__ == "__main__":
     # wavfile = args.input
     # modelfile = args.model
 
-    modelfile = "./models/001750.pt"
+    modelfile = "./models/002000.pt"
     # wavfile = "../sounds/testaudio.wav"
-    wavfile = "../temp/cache.wav"
+    wavfile = "../sounds/demo_with_mobile_sound.wav"
 
     decoder_file(modelfile, wavfile)
 
