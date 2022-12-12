@@ -14,6 +14,12 @@ Before you start to run the code on Tencent Clould GPU server,
 2. Install or Update some packages
     conda install tensorboar scipy
 
+    In my env, tensorboard 2.6.0 is installed,  
+    # Say need to upgrade torch-tb-profiler, and call command:
+    python -m pip install -U torch-tb-profiler
+    #and cause to install google-auth-1.35.0 pandas-1.5.2 pytz-2022.6 torch-tb-profiler-0.4.0
+    # I wonder if we can install in one line command.
+
 3.  Run in background
 
     nohup python main.py &
