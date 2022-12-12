@@ -117,7 +117,7 @@ if __name__ == "__main__":
     # modelfile = args.model
 
     modelfile = "../sounds/demo_NNmodel_001750.pt"
-    modelfilenew = "../sounds/demo_Len1-20_005390.pt"
+    modelfilenew = "../sounds/demo_Len1-20_006000_LRx0.5.pt"
 
     # wavfile = "../sounds/testaudio.wav"
     wavfile = "../sounds/demo_with_mobile_sound.wav"
