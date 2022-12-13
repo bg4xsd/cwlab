@@ -125,8 +125,12 @@ if __name__ == "__main__":
 
     # Lower learning rate to 1e-4 after about 1500 epochs
     optimizer = optim.Adam(model.parameters(), lr=0.01)
+    # optimizer = optim.Adam(model.parameters(), lr=0.005)
     # optimizer = optim.Adam(model.parameters(), lr=0.001)
+    # optimizer = optim.Adam(model.parameters(), lr=0.0005)
     # optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    # optimizer = optim.Adam(model.parameters(), lr=0.00005)
+    # optimizer = optim.Adam(model.parameters(), lr=0.00001)
     ctc_loss = nn.CTCLoss()
 
     train_loader = torch.utils.data.DataLoader(
