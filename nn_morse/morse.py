@@ -69,19 +69,18 @@ MORSE_CODE_DICT = {
 }
 ALPHABET = " " + "".join(MORSE_CODE_DICT.keys())
 
-
-def get_spectrogram(samples):
-    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
-    _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
-    return s
-
-
 text_len = 10
 pitch = 500
 wpm = 20
 noise_power = 1
 amplitude = 100
 s = None
+
+
+def get_spectrogram(samples):
+    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
+    _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
+    return s
 
 
 def generate_sample(
@@ -107,10 +106,10 @@ def generate_sample(
         return int(3 * dot * scale)
 
     # Create random string that doesn't start or end with a space
-    if s is None:
+    if s is None or len(s) < 2:
         if text_len == 1:
-            s1 = ''.join(random.choices(ALPHABET, k=1))
-            s = s1
+            s2 = ''.join(random.choices(ALPHABET[1:], k=2))
+            s = s2[1]
         else:
             s1 = ''.join(random.choices(ALPHABET, k=text_len - 2))
             s2 = ''.join(random.choices(ALPHABET[1:], k=2))
@@ -172,6 +171,7 @@ if __name__ == "__main__":
 
     s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
+    print("sentence is :", y, " smaples size is :", len(samples), 'wpm is ', wpm)
     samples = samples.astype(np.float32)
     fname = (
         "CallCQ_pitch"
