@@ -172,7 +172,6 @@ if __name__ == "__main__":
     s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
     print("sentence is :", y, " smaples size is :", len(samples), 'wpm is ', wpm)
-    print("Spectrun shape is : ", spec.shape)
     samples = samples.astype(np.float32)
     fname = (
         "CallCQ_pitch"

@@ -116,14 +116,52 @@ if __name__ == "__main__":
     # wavfile = args.input
     # modelfile = args.model
 
-    modelfile = "../sounds/demo_NNmodel_001750.pt"
-    modelfilenew = "../sounds/demo_Len1-20_006000_LRx0.5.pt"
-
-    # wavfile = "../sounds/testaudio.wav"
-    wavfile = "../sounds/demo_with_mobile_sound.wav"
-
-    decoder_file(modelfile, wavfile)
-    decoder_file(modelfilenew, wavfile)
-
     # python decode_audio.py --model ./models/001750.pt ../CallCQ_pitch416_wpm17_noise83_amplitude36.wav
     # wavfile = "../data/cwWithWhiteNoiseSuper.wav"
+
+    modelfile0 = "../models_lib/demo_NNmodel_001750.pt"
+    modelfile1 = "../models_lib/models_Len1-20_7.5k_varLRx0.5/005000.pt"
+    modelfile2 = "../models_lib/models_Len1-20_6.0k_varLRx0.9/006000.pt"
+    modelfile3 = "../models_lib/models_Len1_20_batch64_14k_5stage/007000.pt"
+    modelfile4 = "../models_lib/models_Len1_20_batch128_14k_5stage/008000.pt"
+
+    wavfile0 = "../sounds_lib/demo_with_mobile_sound.wav"
+    wavfile1 = "../sounds_lib/100MostCommonEnglishWords12.wav"
+    wavfile2 = "../sounds_lib/100MostCommonEnglishWords24.wav"
+    # wavfile3 = "../sounds_lib/500MostCommonEnglishWords16.wav"
+    # wavfile4 = "../sounds_lib/500MostCommonEnglishWords28.wav"
+    wavfile5 = "../sounds_lib/CallCQ_pitch543_wpm10_noise189_amplitude117.wav"
+    wavfile6 = "../sounds_lib/CallCQ_pitch664_wpm19_noise127_amplitude87.wav"
+    wavfile7 = "../sounds_lib/CallCQ_pitch545_wpm27_noise128_amplitude46.wav"
+
+    mList = []
+    mList.append(modelfile0)
+    mList.append(modelfile1)
+    mList.append(modelfile2)
+    mList.append(modelfile3)
+    mList.append(modelfile4)
+
+    sList = []
+    sList.append(wavfile0)
+    sList.append(wavfile1)
+    sList.append(wavfile2)
+    # sList.append(wavfile3)
+    # sList.append(wavfile4)
+    sList.append(wavfile5)
+    sList.append(wavfile6)
+    sList.append(wavfile7)
+
+    # single compare test
+    # decoder_file(modelfile0, wavfile0)
+    # decoder_file(modelfile1, wavfile1)
+
+    # test case for multipule tests
+    # choice one CW QSO, compared decode result by using different models
+    print("Start to run test case ...")
+    for s in sList:
+        print("Using QSO : ", s)
+        for m in mList:
+            print("Using Model : ", m)
+            decoder_file(m, s)
+
+    print("Test case is completed.")
