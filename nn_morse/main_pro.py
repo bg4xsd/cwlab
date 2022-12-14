@@ -6,6 +6,8 @@ os.chdir(sys.path[0])
 print("Current work directory -> %s" % os.getcwd())
 
 import random
+import argparse
+
 from torch.utils.tensorboard import SummaryWriter
 
 import torch
@@ -85,13 +87,20 @@ class Net(nn.Module):
 
 
 class Dataset(data.Dataset):
+    low = 10
+    high = 20
+
+    def __init__(self, inLow, inHigh):
+        self.low = inLow
+        self.high = inHigh
+
     def __len__(self):
         return 2048
 
     def __getitem__(self, index):
         # Modify here, for input cw length, default recomends is  10~20,
         # For real audio data, buffer is short and use 1~10
-        length = random.randrange(1, 20)
+        length = random.randrange(self.low, self.high)
         pitch = random.randrange(100, 950)
         wpm = random.randrange(10, 40)
         noise_power = random.randrange(0, 200)
@@ -112,7 +121,54 @@ def collate_fn_pad(batch):
 
 
 if __name__ == "__main__":
-    batch_size = 64
+    # Add new input args for running batch jobs
+    # Ref： https://blog.csdn.net/xixihahalelehehe/article/details/121199110
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--len_low")
+    parser.add_argument("--len_high")
+    parser.add_argument("--batch_size")
+    parser.add_argument("--lr", required=True)
+    parser.add_argument("--epoch_start", required=True)
+    parser.add_argument("--epoch_end", required=True)
+    parser.add_argument("--workers")
+    args = parser.parse_args()
+    # usage: python main_pro.py --lr=0.01 --epoch_start 2500 --epoch_end 7500
+    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.001 --epoch_start 8000 --epoch_end 10000 --workers 6
+    # if not pointed the training sentence, use default value, 10-20 chars
+    if args.len_low is None:
+        args.len_low = 10
+    if args.len_high is None:
+        args.len_high = 20
+    if args.batch_size is None:
+        args.batch_size = 64  # default is 64, sometimes, 128 will be OK.
+    if args.lr is None:
+        args.lr = 1e-3  # default is 0.001, after many epoch,it should be reduce to 1e-4 or less
+    if args.epoch_start is None:
+        args.epoch_start = 0
+    if args.epoch_end is None:
+        args.epoch_end = (
+            5000  # default is  training from 0~5000 epoch， try and see the case
+        )
+    if args.workers is None:
+        args.workers = 4  # use 4 for lower cpu
+
+    print(
+        "QSO length is ",
+        args.len_low,
+        " ~ ",
+        args.len_high,
+        ", traing batch size is ",
+        args.batch_size,
+        ", LR is ",
+        args.lr,
+        ", Starting epoch is ",
+        args.epoch_start,
+        ", Ending epoch is ",
+        args.epoch_end,
+        ", Works' number is ",
+        args.workers,
+    )
+
     spectrogram_size = generate_sample()[1].shape[0]
 
     device = torch.device("cuda")
@@ -124,28 +180,31 @@ if __name__ == "__main__":
     print("Number of params", model.count_parameters())
 
     # Lower learning rate to 1e-4 after about 1500 epochs
-    optimizer = optim.Adam(model.parameters(), lr=0.0005)
-    # optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    optimizer = optim.Adam(model.parameters(), lr=float(args.lr))
+    # optimizer = optim.Adam(model.parameters(), lr=1e-3 ~ 1e-4)
     ctc_loss = nn.CTCLoss()
 
     train_loader = torch.utils.data.DataLoader(
-        Dataset(),  # Default init using fix length
-        batch_size=batch_size,
-        num_workers=8,
+        # Dataset(), # Default init using fix length
+        Dataset(
+            int(args.len_low), int(args.len_high)
+        ),  # Imnproved init using choosing length
+        batch_size=int(args.batch_size),
+        num_workers=int(args.workers),
         collate_fn=collate_fn_pad,
     )
 
     random.seed(0)
 
     # epoch = 1500 # modify with lr=1e-4
-    epoch = 2000
+    epoch = int(args.epoch_start)
 
     # Resume training
     if epoch != 0:
         model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
 
     model.train()
-    while epoch <= 5000:
+    while epoch <= int(args.epoch_end):
         # if epoch % 200 == 0:   # every 1500 epoch, update lr rate
         #     for params in optimizer.param_groups:
         #         # Find in the params list，update the lr = lr * 0.9
@@ -168,7 +227,7 @@ if __name__ == "__main__":
 
         writer.add_scalar("training/loss", loss.item(), epoch)
 
-        if epoch % 10 == 0:
+        if epoch % 200 == 0:
             torch.save(model.state_dict(), f"models/{epoch:06}.pt")
 
         print(prediction_to_str(y[0]))
