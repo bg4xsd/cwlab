@@ -45,7 +45,6 @@ def prediction_to_str(seq):
 
 def get_training_sample(*args, **kwargs):
     _, spec, y = generate_sample(*args, **kwargs)
-
     spec = torch.from_numpy(spec)
     spec = spec.permute(1, 0)
 
@@ -99,7 +98,9 @@ class Dataset(data.Dataset):
 
     def __getitem__(self, index):
         # Modify here, for input cw length, default recomends is  10~20,
-        # For real audio data, buffer is short and use 1~10
+        # For real audio data, buffer is short and use 1~10(not include 10, only 1~9)
+        # randrange(1,3), only will be 1, 2, NOT include 3,
+        # so the input should use lenght+1
         length = random.randrange(self.low, self.high)
         pitch = random.randrange(100, 950)
         wpm = random.randrange(10, 40)
@@ -122,7 +123,8 @@ def collate_fn_pad(batch):
 
 if __name__ == "__main__":
     # Add new input args for running batch jobs
-    # Ref： https://blog.csdn.net/xixihahalelehehe/article/details/121199110
+    # len_high must > 1,  the proc use random.randrange(a,b)
+    # In fact,it will generate data from a to b-1.
     parser = argparse.ArgumentParser()
     parser.add_argument("--len_low")
     parser.add_argument("--len_high")
@@ -133,7 +135,9 @@ if __name__ == "__main__":
     parser.add_argument("--workers")
     args = parser.parse_args()
     # usage: python main_pro.py --lr=0.01 --epoch_start 2500 --epoch_end 7500
-    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.001 --epoch_start 8000 --epoch_end 10000 --workers 6
+    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.001 --epoch_start 0 --epoch_end 2000 --workers 6
+    #        python main_pro.py  --len_low 1 --len_high 2 --batch_size 32 --lr 0.001 --epoch_start 0 --epoch_end 2000 --workers 6
+    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.0001 --epoch_start 8000 --epoch_end 10000 --workers 6
     # if not pointed the training sentence, use default value, 10-20 chars
     if args.len_low is None:
         args.len_low = 10
@@ -156,7 +160,7 @@ if __name__ == "__main__":
         "QSO length is ",
         args.len_low,
         " ~ ",
-        args.len_high,
+        int(args.len_high) - 1,
         ", traing batch size is ",
         args.batch_size,
         ", LR is ",

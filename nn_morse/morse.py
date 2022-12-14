@@ -22,8 +22,9 @@ import random
 
 SAMPLE_FREQ = 2000  # 2 Khz
 
-# 60 Chars dict
+# 58 Chars dict
 MORSE_CODE_DICT = {
+    ' ': '.......',  # Add to train model, is OK?
     'A': '.-',
     'B': '-...',
     'C': '-.-.',
@@ -63,22 +64,43 @@ MORSE_CODE_DICT = {
     '.': '.-.-.-',
     ',': '--..--',
     '?': '..--..',
+    "'": '.----.',
+    '!': '-.-.--',
+    '/': '-..-.',
+    '(': '-.--.',  # KN
+    ')': '-.--.-',
+    '&': '.-...',  # AS
+    ':': '---...',
+    ';': '-.-.-.',
     '=': '-...-',
-    '+': '.-.-.',
-    # '/': '-..-.',
+    '+': '.-.-.',  # AR
+    '-': '-....-',
+    '_': '..--.-',
+    '"': '.-..-.',
+    '$': '...-..-',
+    '@': '.--.-.',
+    '$': '...-.-',
+    '#': '-...-.-',  # BK replace
+    '%': '-.-..-..',  # CL replace
+    '^': '-...-',  # BT replace
+    '*': '...-.-',  # SK replace
 }
 ALPHABET = " " + "".join(MORSE_CODE_DICT.keys())
 
-text_len = 10
-pitch = 500
-wpm = 20
-noise_power = 1
-amplitude = 100
-s = None
-
 
 def get_spectrogram(samples):
+    # 250 units/min，也就是 60 sec/250unit, 240ms/unit @ 5WPM，
+    # 120ms/unit @ 10WPM，60ms/unit @20WPM，30ms/unit @40WPM。
+    # 24ms/unit @50WPM, 这个窗口勉强覆盖到 50 WPM， 应该是够用了。
     window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
+    # Ref : https://blog.csdn.net/zhuoqingjoking97298/article/details/122634775
+    # smaples is the collected dataset/time series
+    # nperseg 每个段的长度。默认为无，但是如果window是str或tuple，
+    #         则设置为256，如果window是数组，则设置为窗口的长度。
+    # Return value list:
+    #   f：ndarray   采样频率数组
+    #   t：ndarray   细分时间数组
+    #   Sxx：ndarray   x的频谱图,默认情况下，Sxx的最后一个轴对应于段时间。
     _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
     return s
 
@@ -106,7 +128,8 @@ def generate_sample(
         return int(3 * dot * scale)
 
     # Create random string that doesn't start or end with a space
-    if s is None or len(s) < 2:
+    # In this version, ' ' is added into the dict, so the apace will appear.
+    if s is None:
         if text_len == 1:
             s2 = ''.join(random.choices(ALPHABET[1:], k=2))
             s = s2[1]
@@ -114,9 +137,12 @@ def generate_sample(
             s1 = ''.join(random.choices(ALPHABET, k=text_len - 2))
             s2 = ''.join(random.choices(ALPHABET[1:], k=2))
             s = s2[0] + s1 + s2[1]
+    else:
+        s = s
 
     out = []
-    out.append(np.zeros(5 * get_dot()))
+    # randint(1,7), >=1 and <=7, include 1 and 7
+    out.append(np.zeros(random.randint(1, 7) * get_dot()))
 
     # The space between two signs of the same character is equal to the length of one dot.
     # The space between two characters of the same word is three times the length of a dot.
@@ -136,7 +162,7 @@ def generate_sample(
 
             out.append(np.zeros(2 * get_dot()))
 
-    out.append(np.zeros(5 * get_dot()))
+    out.append(np.zeros(random.randint(1, 5) * get_dot()))
     out = np.hstack(out)
 
     # Modulatation
@@ -169,9 +195,24 @@ if __name__ == "__main__":
     noise_power = random.randrange(0, 200)
     amplitude = random.randrange(10, 150)
 
-    s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
+    # s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
+    length = 2
+    pitch = 680
+    noise_power = 0
+    s = None
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
-    print("sentence is :", y, " smaples size is :", len(samples), 'wpm is ', wpm)
+    print("Spec shape is : ", spec.shape)
+    print(f"pitch: {pitch} wpm: {wpm} noise: {noise_power} amplitude: {amplitude}")
+    print(
+        "sentence is :",
+        y,
+        "length is :",
+        length,
+        " smaples size is :",
+        len(samples),
+        'wpm is ',
+        wpm,
+    )
     samples = samples.astype(np.float32)
     fname = (
         "CallCQ_pitch"
@@ -184,9 +225,8 @@ if __name__ == "__main__":
         + str(amplitude)
         + ".wav"
     )
-    write(fname, SAMPLE_FREQ, samples)
-    write("testaudio.wav", SAMPLE_FREQ, samples)
-    print(f"pitch: {pitch} wpm: {wpm} noise: {noise_power} amplitude: {amplitude} {y}")
+    write("../temp/" + fname, SAMPLE_FREQ, samples)
+    write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
 
     plt.figure()
     plt.pcolormesh(spec)
