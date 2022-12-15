@@ -86,6 +86,7 @@ class Net(nn.Module):
 
 
 class Dataset(data.Dataset):
+    # Defualt QSO length, low limit and upper limit
     low = 10
     high = 20
 
@@ -173,6 +174,7 @@ if __name__ == "__main__":
         args.workers,
     )
 
+    # 获得参数大小，用来构建网络， 这个size 跟抽样频率有关
     spectrogram_size = generate_sample()[1].shape[0]
 
     device = torch.device("cuda")

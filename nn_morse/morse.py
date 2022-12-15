@@ -20,11 +20,10 @@ from scipy import signal
 import numpy as np
 import random
 
-SAMPLE_FREQ = 2000  # 2 Khz
+SAMPLE_FREQ = 6000  # 2 Khz，6Khz can be deall with other software
 
 # 58 Chars dict
 MORSE_CODE_DICT = {
-    ' ': '.......',  # Add to train model, is OK?
     'A': '.-',
     'B': '-...',
     'C': '-.-.',
@@ -93,6 +92,7 @@ def get_spectrogram(samples):
     # 120ms/unit @ 10WPM，60ms/unit @20WPM，30ms/unit @40WPM。
     # 24ms/unit @50WPM, 这个窗口勉强覆盖到 50 WPM， 应该是够用了。
     window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
+
     # Ref : https://blog.csdn.net/zhuoqingjoking97298/article/details/122634775
     # smaples is the collected dataset/time series
     # nperseg 每个段的长度。默认为无，但是如果window是str或tuple，
@@ -118,13 +118,17 @@ def generate_sample(
     # np.random.randn(np.random.randint(4, 7))
     # More difficult for NN
     #
+    # 设置的过宽，会导致dot，dash无法识别，现在缩小的波动范围
+    sl = 0.75  # scale low limit，原来是0.7
+    su = 1.5  # scale up limit，原来是2
+
     def get_dot():
-        scale = np.clip(np.random.normal(1, 0.2), 0.5, 2.0)
+        scale = np.clip(np.random.normal(1, 0.2), sl, su)
         return int(dot * scale)
 
     # The length of a dash is three times the length of a dot.
     def get_dash():
-        scale = np.clip(np.random.normal(1, 0.2), 0.5, 2.0)
+        scale = np.clip(np.random.normal(1, 0.2), sl, su)
         return int(3 * dot * scale)
 
     # Create random string that doesn't start or end with a space
@@ -141,7 +145,12 @@ def generate_sample(
         s = s
 
     out = []
-    # randint(1,7), >=1 and <=7, include 1 and 7
+    # The original author choose to use 5 * get_dot()
+    # out.append(np.zeros(5 * get_dot()))
+    # For clear CW environment, 0 for no signal, 1 for signal
+    # then, the noise will be added.
+    # Another problem, we can not make sure the distance to last words
+    # So, I use a random int to indicate the distance, not the fixed value.
     out.append(np.zeros(random.randint(1, 7) * get_dot()))
 
     # The space between two signs of the same character is equal to the length of one dot.
@@ -150,7 +159,8 @@ def generate_sample(
     s = s.upper()
     for c in s:
         if c == ' ':
-            out.append(np.zeros(7 * get_dot()))
+            # total 7 unit for white space
+            out.append(np.zeros(get_dot() + 2 * get_dot() + 3 * get_dot() + get_dot()))
         else:
             for m in MORSE_CODE_DICT[c]:
                 if m == '.':
@@ -160,15 +170,26 @@ def generate_sample(
                     out.append(np.ones(get_dash()))
                     out.append(np.zeros(get_dot()))
 
-            out.append(np.zeros(2 * get_dot()))
+            out.append(np.zeros(get_dot() + get_dot()))
 
-    out.append(np.zeros(random.randint(1, 5) * get_dot()))
+    # The original author choose to use 5 * get_dot(), at the end of a word
+    # out.append(np.zeros(5 * get_dot()))
+    # There are already 3 unit at the end of last char, so add 4 units will
+    # indicate the end of a word. Here I use a random int 3~5
+    out.append(np.zeros(random.randint(3, 5) * get_dot()))
+
+    # Convert to one line array
     out = np.hstack(out)
 
     # Modulatation
     t = np.arange(len(out)) / SAMPLE_FREQ
     sine = np.sin(2 * np.pi * t * pitch)
     out = sine * out
+
+    # If you want to see the modulated data,run below code in Jupyter
+    # import matplotlib.pyplot as plt
+    # x=range(len(sine))
+    # plt.plot(x,sine)
 
     # Add noise
     noise_power = 1e-6 * noise_power * SAMPLE_FREQ / 2
