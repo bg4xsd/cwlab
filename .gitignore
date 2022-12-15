@@ -1,6 +1,7 @@
 # My definition
 *.code-workspace
 run_vscode.cmd
+batch_jobs.sh
 temp/
 
 # Byte-compiled / optimized / DLL files
