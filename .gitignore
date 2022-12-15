@@ -1,6 +1,7 @@
 # My definition
 *.code-workspace
 run_vscode.cmd
+temp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
