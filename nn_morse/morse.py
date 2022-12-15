@@ -20,7 +20,7 @@ from scipy import signal
 import numpy as np
 import random
 
-SAMPLE_FREQ = 6000  # 2 Khz，6Khz can be deall with other software
+SAMPLE_FREQ = 2000  # 2 Khz，6Khz can be deall with other software
 
 # 58 Chars dict
 MORSE_CODE_DICT = {
