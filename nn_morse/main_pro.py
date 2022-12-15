@@ -26,6 +26,14 @@ num_tags = len(ALPHABET)
 tag_to_idx = {c: i + 1 for i, c in enumerate(ALPHABET)}
 idx_to_tag = {i + 1: c for i, c in enumerate(ALPHABET)}
 
+# Create directory, 创建目录
+def Mkdir(path):  # path是指定文件夹路径
+    if os.path.isdir(path):
+        # print('文件夹已存在')
+        pass
+    else:
+        os.makedirs(path)
+
 
 def prediction_to_str(seq):
     if not isinstance(seq, list):
@@ -134,11 +142,12 @@ if __name__ == "__main__":
     parser.add_argument("--epoch_start", required=True)
     parser.add_argument("--epoch_end", required=True)
     parser.add_argument("--workers")
+    parser.add_argument("--output_dir")
     args = parser.parse_args()
     # usage: python main_pro.py --lr=0.01 --epoch_start 2500 --epoch_end 7500
-    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.001 --epoch_start 0 --epoch_end 2000 --workers 6
-    #        python main_pro.py  --len_low 1 --len_high 2 --batch_size 32 --lr 0.001 --epoch_start 0 --epoch_end 2000 --workers 6
-    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.0001 --epoch_start 8000 --epoch_end 10000 --workers 6
+    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.001 --epoch_start 0 --epoch_end 2000 --workers 6 --output_dir models
+    #        python main_pro.py  --len_low 1 --len_high 2 --batch_size 32 --lr 0.001 --epoch_start 0 --epoch_end 2000 --workers 6 --output_dir models
+    # usage: python main_pro.py  --len_low 12 --len_high 24 --batch_size 64 --lr 0.0001 --epoch_start 8000 --epoch_end 10000 --workers 6 --output_dir models
     # if not pointed the training sentence, use default value, 10-20 chars
     if args.len_low is None:
         args.len_low = 10
@@ -156,7 +165,8 @@ if __name__ == "__main__":
         )
     if args.workers is None:
         args.workers = 4  # use 4 for lower cpu
-
+    if args.output_dir is None:
+        args.output_dir = "models"  # Model output directory
     print(
         "QSO length is ",
         args.len_low,
@@ -172,7 +182,13 @@ if __name__ == "__main__":
         args.epoch_end,
         ", Works' number is ",
         args.workers,
+        ", Model output dir is ",
+        args.output_dir,
     )
+
+    model_dir = args.output_dir
+    if not os.path.isdir(model_dir):
+        Mkdir(model_dir)
 
     # 获得参数大小，用来构建网络， 这个size 跟抽样频率有关
     spectrogram_size = generate_sample()[1].shape[0]
@@ -207,7 +223,9 @@ if __name__ == "__main__":
 
     # Resume training
     if epoch != 0:
-        model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
+        model.load_state_dict(
+            torch.load(model_dir + f"/{epoch:06}.pt", map_location=device)
+        )
 
     model.train()
     while epoch <= int(args.epoch_end):
@@ -234,7 +252,7 @@ if __name__ == "__main__":
         writer.add_scalar("training/loss", loss.item(), epoch)
 
         if epoch % 200 == 0:
-            torch.save(model.state_dict(), f"models/{epoch:06}.pt")
+            torch.save(model.state_dict(), model_dir + f"/{epoch:06}.pt")
 
         print(prediction_to_str(y[0]))
         print(prediction_to_str(m))
