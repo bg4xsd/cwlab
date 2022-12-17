@@ -13,8 +13,8 @@
 
 import os, sys
 
-# os.chdir(sys.path[0])
-# print("Current work directory -> %s" % os.getcwd())
+os.chdir(sys.path[0])
+print("Current work directory -> %s" % os.getcwd())
 
 from scipy import signal
 import numpy as np
