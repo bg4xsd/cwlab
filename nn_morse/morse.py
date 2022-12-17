@@ -124,8 +124,8 @@ def generate_sample(
     # More difficult for NN
     #
     # 设置的过宽，会导致dot，dash无法识别，现在缩小的波动范围
-    sl = 0.75  # scale low limit，原来是0.7
-    su = 1.5  # scale up limit，原来是2
+    sl = 0.5  # scale low limit，原来是0.7
+    su = 2.0  # scale up limit，原来是2
 
     def get_dot():
         scale = np.clip(np.random.normal(1, 0.2), sl, su)
@@ -215,20 +215,24 @@ if __name__ == "__main__":
     from scipy.io.wavfile import write
     import matplotlib.pyplot as plt
 
-    length = random.randrange(10, 20)
-    pitch = random.randrange(100, 950)
-    wpm = random.randrange(10, 30)
-    noise_power = random.randrange(0, 200)
-    amplitude = random.randrange(10, 150)
+    debug = False
 
-    # s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
-    length = 2
-    # pitch = 650
-    # wpm = 20
-    # noise_power = 0
-    # amplitude = 50
-    # s = 'paris'
-    s = None
+    if not debug:
+        length = random.randrange(10, 20)
+        pitch = random.randrange(100, 950)
+        wpm = random.randrange(10, 30)
+        noise_power = random.randrange(0, 200)
+        amplitude = random.randrange(10, 150)
+
+        s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
+    else:
+        length = 2
+        pitch = 650
+        wpm = 20
+        noise_power = 0
+        amplitude = 50
+        # s = 'paris'
+        s = None
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
     print("Spec shape is : ", spec.shape)
     print(f"pitch: {pitch} wpm: {wpm} noise: {noise_power} amplitude: {amplitude}")
@@ -254,7 +258,7 @@ if __name__ == "__main__":
         + str(amplitude)
         + ".wav"
     )
-    # write("../temp/" + fname, SAMPLE_FREQ, samples)
+
     write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
 
     plt.figure()
