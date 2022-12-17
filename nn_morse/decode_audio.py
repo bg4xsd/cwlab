@@ -90,22 +90,22 @@ if __name__ == "__main__":
     # python decode_audio.py --model ./models/001750.pt ../CallCQ_pitch416_wpm17_noise83_amplitude36.wav
     # wavfile = "../data/cwWithWhiteNoiseSuper.wav"
 
-    modelfile0 = "../models_lib/demo_NNmodel_001750.pt"
-    modelfile1 = "../models_lib/models_Len1-20_7.5k_varLRx0.5/005000.pt"
-    modelfile2 = "../models_lib/models_Len1-20_6.0k_varLRx0.9/006000.pt"
-    modelfile3 = "../models_lib/models_Len1_20_batch64_14k_5stage/007000.pt"
-    modelfile4 = "../models_lib/models_Len1_20_batch128_14k_5stage/008000.pt"
+    modelfile0 = "../models_lib/005000.pt"
+    modelfile1 = "../models_lib/008800.pt"
+    # modelfile2 = "../models_lib/models_Len1-20_6.0k_varLRx0.9/006000.pt"
+    # modelfile3 = "../models_lib/models_Len1_20_batch64_14k_5stage/007000.pt"
+    # modelfile4 = "../models_lib/models_Len1_20_batch128_14k_5stage/008000.pt"
 
     mList = []
     mList.append(modelfile0)
     mList.append(modelfile1)
-    mList.append(modelfile2)
-    mList.append(modelfile3)
-    mList.append(modelfile4)
+    # mList.append(modelfile2)
+    # mList.append(modelfile3)
+    # mList.append(modelfile4)
 
-    wavfile0 = "../sounds_lib/CallCQ_pitch711_wpm15_noise142_amplitude106.wav"
-    wavfile1 = "../sounds_lib/CallCQ_pitch479_wpm20_noise34_amplitude115.wav"
-    wavfile2 = "../sounds_lib/CallCQ_pitch369_wpm25_noise31_amplitude88.wav"
+    # wavfile0 = "../sounds_lib/CallCQ_pitch711_wpm15_noise142_amplitude106.wav"
+    # wavfile1 = "../sounds_lib/CallCQ_pitch479_wpm20_noise34_amplitude115.wav"
+    # wavfile2 = "../sounds_lib/CallCQ_pitch369_wpm25_noise31_amplitude88.wav"
     wavfile3 = "../sounds_lib/CallCQ_pitch573_wpm29_noise47_amplitude59.wav"
     wavfile4 = "../sounds_lib/demo_with_mobile_reord_sound.wav"
     wavfile5 = "../sounds_lib/realQSO_001.wav"
@@ -113,14 +113,14 @@ if __name__ == "__main__":
     wavfile7 = "../sounds_lib/realQSO_003.wav"
 
     sList = []
-    sList.append(wavfile0)
-    sList.append(wavfile1)
-    sList.append(wavfile2)
-    # sList.append(wavfile3)
-    # sList.append(wavfile4)
+    # sList.append(wavfile0)
+    # sList.append(wavfile1)
+    # sList.append(wavfile2)
+    sList.append(wavfile3)
+    sList.append(wavfile4)
     sList.append(wavfile5)
-    sList.append(wavfile6)
-    sList.append(wavfile7)
+    # sList.append(wavfile6)
+    # sList.append(wavfile7)
 
     # single compare test
     # decoder_file(modelfile0, wavfile0)
