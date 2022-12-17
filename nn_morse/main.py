@@ -91,7 +91,7 @@ class Dataset(data.Dataset):
     def __getitem__(self, index):
         # Modify here, for input cw length, default recomends is  10~20,
         # For real audio data, buffer is short and use 1~10
-        length = random.randrange(1, 20)
+        length = random.randrange(10, 20)
         pitch = random.randrange(100, 950)
         wpm = random.randrange(10, 40)
         noise_power = random.randrange(0, 200)
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     print("Number of params", model.count_parameters())
 
     # Lower learning rate to 1e-4 after about 1500 epochs
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
     # optimizer = optim.Adam(model.parameters(), lr=1e-4)
     ctc_loss = nn.CTCLoss()
 
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
 
     model.train()
-    while epoch <= 2000:
+    while epoch <= 1500:
         # if epoch % 200 == 0:   # every 1500 epoch, update lr rate
         #     for params in optimizer.param_groups:
         #         # Find in the params list，update the lr = lr * 0.9
