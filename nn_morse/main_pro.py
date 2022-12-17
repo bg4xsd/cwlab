@@ -65,7 +65,8 @@ def get_training_sample(*args, **kwargs):
 class Net(nn.Module):
     def __init__(self, num_tags, spectrogram_size):
         super(Net, self).__init__()
-
+        # Here add ONE more, is say for 0, stands for blank
+        # But why not the last tag, 60?
         num_tags = num_tags + 1  # 0: blank
         hidden_dim = 256
         lstm_dim1 = 256

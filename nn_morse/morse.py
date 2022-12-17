@@ -13,16 +13,16 @@
 
 import os, sys
 
-os.chdir(sys.path[0])
-print("Current work directory -> %s" % os.getcwd())
+# os.chdir(sys.path[0])
+# print("Current work directory -> %s" % os.getcwd())
 
 from scipy import signal
 import numpy as np
 import random
 
-SAMPLE_FREQ = 2000  # 2 Khz，6Khz can be deall with other software
+SAMPLE_FREQ = 8000  # 2 Khz，6Khz and 8khz can be deall with other software
 
-# 58 Chars dict
+# 59 Chars dict
 MORSE_CODE_DICT = {
     'A': '.-',
     'B': '-...',
@@ -91,6 +91,11 @@ def get_spectrogram(samples):
     # 250 units/min，也就是 60 sec/250unit, 240ms/unit @ 5WPM，
     # 120ms/unit @ 10WPM，60ms/unit @20WPM，30ms/unit @40WPM。
     # 24ms/unit @50WPM, 这个窗口勉强覆盖到 50 WPM， 应该是够用了。
+    # Resolution = windows size  / sample rate
+    # If windows size is  256, 256/6000=0.043, is  43ms
+    # So, the windows size = resolution x sample rate
+    # Aslo, we can enlarge or reduce it.
+    # Ref : https://blog.csdn.net/qq_29884019/article/details/106177650
     window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
 
     # Ref : https://blog.csdn.net/zhuoqingjoking97298/article/details/122634775
@@ -218,8 +223,11 @@ if __name__ == "__main__":
 
     # s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
     length = 2
-    pitch = 680
-    noise_power = 0
+    # pitch = 650
+    # wpm = 20
+    # noise_power = 0
+    # amplitude = 50
+    # s = 'paris'
     s = None
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
     print("Spec shape is : ", spec.shape)
@@ -246,7 +254,7 @@ if __name__ == "__main__":
         + str(amplitude)
         + ".wav"
     )
-    write("../temp/" + fname, SAMPLE_FREQ, samples)
+    # write("../temp/" + fname, SAMPLE_FREQ, samples)
     write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
 
     plt.figure()
