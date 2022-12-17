@@ -18,6 +18,14 @@
 
 2. The directory of **sounds_lib** is used to store some example. Real QSO seems somewaht difficult to the Models.
 
+**Release 1.0**
+
+1. Change the morse dictionary, add some useful procedural signals, also called ProSigns.
+
+2. Adjust the project structure, and prepare to add more functions. Change decoder, add main_pro.py for batching traing work.
+
+3. The main.py, for the forward full connected network plus lstm network structure is kept unchanged, keep for comparing. It seems pd0wm's nn-morse is strong enough, faster training, smaller network. I have to say that pd0wm's work is very GOOD.
+
 Just for fun,  keep it simple.
 
 By BFcat @  2022.12.10
