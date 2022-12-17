@@ -1,0 +1,3 @@
+PKUA MAP MUPAA PPPKMASSPPAM AAKKP PPS AURAP APA PPAA SAKSP AAAPPP KPUP A
+
+NOTE:  The right result should be five chars per group, such as the format of  MUPAA, AAKKP AURAP.

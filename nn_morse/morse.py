@@ -14,13 +14,13 @@
 import os, sys
 
 os.chdir(sys.path[0])
-print("Current work directory -> %s" % os.getcwd())
+# print("Current work directory -> %s" % os.getcwd())
 
 from scipy import signal
 import numpy as np
 import random
 
-SAMPLE_FREQ = 8000  # 2 Khz，6Khz and 8khz can be deall with other software
+SAMPLE_FREQ = 2000  # 2 Khz，6Khz and 8khz can be deall with other software
 
 # 59 Chars dict
 MORSE_CODE_DICT = {
