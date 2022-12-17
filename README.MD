@@ -14,6 +14,10 @@
 
 &nbsp;&nbsp;Some notes:
 
+1. The directory **models_lib** is used to store some pre-trained models, the name would be useful to indicate where it come from.
+
+2. The directory of **sounds_lib** is used to store some example. Real QSO seems somewaht difficult to the Models.
+
 Just for fun,  keep it simple.
 
 By BFcat @  2022.12.10

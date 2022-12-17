@@ -251,8 +251,8 @@ if __name__ == "__main__":
         + str(amplitude)
         + ".wav"
     )
-
-    write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
+    write("../temp/" + fname, SAMPLE_FREQ, samples)
+    # write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
 
     plt.figure()
     plt.pcolormesh(spec)
