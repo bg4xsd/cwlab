@@ -90,7 +90,8 @@ ALPHABET = " " + "".join(MORSE_CODE_DICT.keys())
 def get_spectrogram(samples):
     # 250 units/min，也就是 60 sec/250unit, 240ms/unit @ 5WPM，
     # 120ms/unit @ 10WPM，60ms/unit @20WPM，30ms/unit @40WPM。
-    # 24ms/unit @50WPM, 这个窗口勉强覆盖到 50 WPM， 应该是够用了。
+    # 24ms/unit @50WPM,
+    # If we use 20ms, the function can deal with CW fast than @@50WPM。
     # Resolution = windows size  / sample rate
     # If windows size is  256, 256/6000=0.043, is  43ms
     # So, the windows size = resolution x sample rate
@@ -98,14 +99,6 @@ def get_spectrogram(samples):
     # Ref : https://blog.csdn.net/qq_29884019/article/details/106177650
     window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
 
-    # Ref : https://blog.csdn.net/zhuoqingjoking97298/article/details/122634775
-    # smaples is the collected dataset/time series
-    # nperseg 每个段的长度。默认为无，但是如果window是str或tuple，
-    #         则设置为256，如果window是数组，则设置为窗口的长度。
-    # Return value list:
-    #   f：ndarray   采样频率数组
-    #   t：ndarray   细分时间数组
-    #   Sxx：ndarray   x的频谱图,默认情况下，Sxx的最后一个轴对应于段时间。
     _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
     return s
 
