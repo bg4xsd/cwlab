@@ -94,10 +94,14 @@ def get_spectrogram(samples):
     # If we use 20ms, the function can deal with CW fast than @@50WPM。
     # Resolution = windows size  / sample rate
     # If windows size is  256, 256/6000=0.043, is  43ms
-    # So, the windows size = resolution x sample rate
+    # So,
+    # for time: the windows size = time resolution x sample rate, unit is second
+    # for freq; the windows size = sample rate / freq resolution, unit is Hz
     # Aslo, we can enlarge or reduce it.
     # Ref : https://blog.csdn.net/qq_29884019/article/details/106177650
-    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
+    #       https://fairyonice.github.io/implement-the-spectrogram-from-scratch-in-python.html
+
+    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms time resolution
 
     _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
     return s
