@@ -20,9 +20,9 @@ from scipy import signal
 import numpy as np
 import random
 
-SAMPLE_FREQ = 2000  # 2 Khz，6Khz can be deall with other software
+SAMPLE_FREQ = 2000  # 2 Khz，6Khz and 8khz can be deall with other software
 
-# 58 Chars dict
+# 59 Chars dict
 MORSE_CODE_DICT = {
     'A': '.-',
     'B': '-...',
@@ -90,17 +90,19 @@ ALPHABET = " " + "".join(MORSE_CODE_DICT.keys())
 def get_spectrogram(samples):
     # 250 units/min，也就是 60 sec/250unit, 240ms/unit @ 5WPM，
     # 120ms/unit @ 10WPM，60ms/unit @20WPM，30ms/unit @40WPM。
-    # 24ms/unit @50WPM, 这个窗口勉强覆盖到 50 WPM， 应该是够用了。
-    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
+    # 24ms/unit @50WPM,
+    # If we use 20ms, the function can deal with CW fast than @@50WPM。
+    # Resolution = windows size  / sample rate
+    # If windows size is  256, 256/6000=0.043, is  43ms
+    # So,
+    # for time: the windows size = time resolution x sample rate, unit is second
+    # for freq; the windows size = sample rate / freq resolution, unit is Hz
+    # Aslo, we can enlarge or reduce it.
+    # Ref : https://blog.csdn.net/qq_29884019/article/details/106177650
+    #       https://fairyonice.github.io/implement-the-spectrogram-from-scratch-in-python.html
 
-    # Ref : https://blog.csdn.net/zhuoqingjoking97298/article/details/122634775
-    # smaples is the collected dataset/time series
-    # nperseg 每个段的长度。默认为无，但是如果window是str或tuple，
-    #         则设置为256，如果window是数组，则设置为窗口的长度。
-    # Return value list:
-    #   f：ndarray   采样频率数组
-    #   t：ndarray   细分时间数组
-    #   Sxx：ndarray   x的频谱图,默认情况下，Sxx的最后一个轴对应于段时间。
+    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms time resolution
+
     _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
     return s
 
@@ -119,8 +121,8 @@ def generate_sample(
     # More difficult for NN
     #
     # 设置的过宽，会导致dot，dash无法识别，现在缩小的波动范围
-    sl = 0.75  # scale low limit，原来是0.7
-    su = 1.5  # scale up limit，原来是2
+    sl = 0.5  # scale low limit，原来是0.7
+    su = 2.0  # scale up limit，原来是2
 
     def get_dot():
         scale = np.clip(np.random.normal(1, 0.2), sl, su)
@@ -210,17 +212,24 @@ if __name__ == "__main__":
     from scipy.io.wavfile import write
     import matplotlib.pyplot as plt
 
-    length = random.randrange(10, 20)
-    pitch = random.randrange(100, 950)
-    wpm = random.randrange(10, 30)
-    noise_power = random.randrange(0, 200)
-    amplitude = random.randrange(10, 150)
+    debug = False
 
-    # s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
-    length = 2
-    pitch = 680
-    noise_power = 0
-    s = None
+    if not debug:
+        length = random.randrange(10, 20)
+        pitch = random.randrange(100, 950)
+        wpm = random.randrange(10, 30)
+        noise_power = random.randrange(0, 200)
+        amplitude = random.randrange(10, 150)
+
+        s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
+    else:
+        length = 2
+        pitch = 650
+        wpm = 20
+        noise_power = 0
+        amplitude = 50
+        # s = 'paris'
+        s = None
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
     print("Spec shape is : ", spec.shape)
     print(f"pitch: {pitch} wpm: {wpm} noise: {noise_power} amplitude: {amplitude}")
@@ -247,7 +256,7 @@ if __name__ == "__main__":
         + ".wav"
     )
     write("../temp/" + fname, SAMPLE_FREQ, samples)
-    write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
+    # write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
 
     plt.figure()
     plt.pcolormesh(spec)
