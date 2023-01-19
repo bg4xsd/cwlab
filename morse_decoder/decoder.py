@@ -35,6 +35,8 @@ from morse import ALPHABET, generate_sample
 tag_to_idx = {c: i + 1 for i, c in enumerate(ALPHABET)}
 idx_to_tag = {i + 1: c for i, c in enumerate(ALPHABET)}
 
+num_tags = len(ALPHABET)
+
 
 def prediction_to_str(seq):
     if not isinstance(seq, list):
@@ -66,7 +68,7 @@ def get_training_sample(*args, **kwargs):
 # It is a Dense-LSTM_Dense network by PyTorch
 class NetDLD(nn.Module):
     def __init__(self, num_tags, spectrogram_size):
-        super(Net, self).__init__()
+        super(NetDLD, self).__init__()
         # Here add ONE more, is say for 0, stands for blank
         # But why not the last tag, 60?
         num_tags = num_tags + 1  # 0: blank

@@ -136,8 +136,13 @@ if __name__ == "__main__":
     # 获得参数大小，用来构建网络， 这个size 跟抽样频率有关
     spectrogram_size = generate_sample()[1].shape[0]
 
-    device = torch.device("cuda")
-    # device = torch.device("cpu")
+    # Get cpu or gpu device for training.
+    mydevice = "cuda" if torch.cuda.is_available() else "cpu"
+    # print(f"Using {mydevice} device")
+    device = torch.device(mydevice)
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     writer = SummaryWriter()
 
     # Set up trainer & evaluator

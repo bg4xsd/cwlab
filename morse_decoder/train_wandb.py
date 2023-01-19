@@ -159,9 +159,12 @@ if __name__ == "__main__":
 
     spectrogram_size = generate_sample()[1].shape[0]
 
-    device = torch.device("cuda")
-    # device = torch.device("cpu")
-    torch.cuda.empty_cache()
+    # Get cpu or gpu device for training.
+    mydevice = "cuda" if torch.cuda.is_available() else "cpu"
+    # print(f"Using {mydevice} device")
+    device = torch.device(mydevice)
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
     # Set up trainer & evaluator
     model = NetDLD(num_tags, spectrogram_size).to(device)
