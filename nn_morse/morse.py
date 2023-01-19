@@ -93,12 +93,12 @@ def get_spectrogram(samples):
     # 24ms/unit @50WPM, 这个窗口勉强覆盖到 50 WPM， 应该是够用了。
     # Resolution = windows size  / sample rate
     # If windows size is  256, 256/6000=0.043, is  43ms
-    # So, the windows size = resolution x sample rate
+    # So,
+    # for time: the windows size = time resolution x sample rate, unit is second
+    # for freq; the windows size = sample rate / freq resolution, unit is Hz
     # Aslo, we can enlarge or reduce it.
     # Ref : https://blog.csdn.net/qq_29884019/article/details/106177650
-    window_length = int(0.02 * SAMPLE_FREQ * 4)  # 80 ms windows
-
-    # Ref : https://blog.csdn.net/zhuoqingjoking97298/article/details/122634775
+    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
 
     # _, _, s = signal.spectrogram(samples, fs= SAMPLE_FREQ, nperseg=window_length, noverlap=0)
     _, _, s = signal.spectrogram(
