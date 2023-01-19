@@ -1,24 +1,35 @@
-#!/usr/bin/env python3
-import os
-import sys
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+'''
+@File    :  morse.py
+@Time    :  :2022/12/10
+@Author  :   Dr. Cat Lu / BFcat
+@Version :   1.0
+@Contact :   bfcat@live.cn
+@Site    :   https://bg4xsd.github.io
+@License :   (C)MIT License
+@Desc    :   This is a part of project CWLab, more details can be found on the site.
+'''
+
+import os, sys
 
 os.chdir(sys.path[0])
-print("Current work directory -> %s" % os.getcwd())
+# print("Current work directory -> %s" % os.getcwd())
 
+from scipy import signal
+import numpy as np
 import random
-from torch.utils.tensorboard import SummaryWriter
+import os
+import sys
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils import data
-
-
-from morse import ALPHABET, generate_sample
 from itertools import groupby
 
-num_tags = len(ALPHABET)
+from morse import ALPHABET, generate_sample
 
 # 0: blank label
 tag_to_idx = {c: i + 1 for i, c in enumerate(ALPHABET)}
@@ -43,7 +54,6 @@ def prediction_to_str(seq):
 
 def get_training_sample(*args, **kwargs):
     _, spec, y = generate_sample(*args, **kwargs)
-
     spec = torch.from_numpy(spec)
     spec = spec.permute(1, 0)
 
@@ -53,10 +63,12 @@ def get_training_sample(*args, **kwargs):
     return spec, y_tags
 
 
-class Net(nn.Module):
+# It is a Dense-LSTM_Dense network by PyTorch
+class NetDLD(nn.Module):
     def __init__(self, num_tags, spectrogram_size):
         super(Net, self).__init__()
-
+        # Here add ONE more, is say for 0, stands for blank
+        # But why not the last tag, 60?
         num_tags = num_tags + 1  # 0: blank
         hidden_dim = 256
         lstm_dim1 = 256
@@ -85,13 +97,23 @@ class Net(nn.Module):
 
 
 class Dataset(data.Dataset):
+    # Defualt QSO length, low limit and upper limit
+    low = 10
+    high = 20
+
+    def __init__(self, inLow, inHigh):
+        self.low = inLow
+        self.high = inHigh
+
     def __len__(self):
         return 2048
 
     def __getitem__(self, index):
         # Modify here, for input cw length, default recomends is  10~20,
-        # For real audio data, buffer is short and use 1~10
-        length = random.randrange(10, 20)
+        # For real audio data, buffer is short and use 1~10(not include 10, only 1~9)
+        # randrange(1,3), only will be 1, 2, NOT include 3,
+        # so the input should use lenght+1
+        length = random.randrange(self.low, self.high)
         pitch = random.randrange(100, 950)
         wpm = random.randrange(10, 40)
         noise_power = random.randrange(0, 200)
@@ -109,70 +131,3 @@ def collate_fn_pad(batch):
     ys = nn.utils.rnn.pad_sequence(ys, batch_first=True)
 
     return input_lengths, output_lengths, seqs, ys
-
-
-if __name__ == "__main__":
-    batch_size = 64
-    spectrogram_size = generate_sample()[1].shape[0]
-
-    device = torch.device("cuda")
-    # device = torch.device("cpu")
-    writer = SummaryWriter()
-
-    # Set up trainer & evaluator
-    model = Net(num_tags, spectrogram_size).to(device)
-    print("Number of params", model.count_parameters())
-
-    # Lower learning rate to 1e-4 after about 1500 epochs
-    optimizer = optim.Adam(model.parameters(), lr=1e-5)
-    # optimizer = optim.Adam(model.parameters(), lr=1e-4)
-    ctc_loss = nn.CTCLoss()
-
-    train_loader = torch.utils.data.DataLoader(
-        Dataset(),  # Default init using fix length
-        batch_size=batch_size,
-        num_workers=4,
-        collate_fn=collate_fn_pad,
-    )
-
-    random.seed(0)
-
-    # epoch = 1500 # modify with lr=1e-4
-    epoch = 3000
-
-    # Resume training
-    if epoch != 0:
-        model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
-
-    model.train()
-    while epoch <= 5000:
-        # if epoch % 200 == 0:   # every 1500 epoch, update lr rate
-        #     for params in optimizer.param_groups:
-        #         # Find in the params list，update the lr = lr * 0.9
-        #         params['lr'] *= 0.
-        #         # params['weight_decay'] = 0.5  # Others
-        for (input_lengths, output_lengths, x, y) in train_loader:
-            x, y = x.to(device), y.to(device)
-
-            optimizer.zero_grad()
-
-            y_pred = model(x)
-
-            m = torch.argmax(y_pred[0], 1)
-            y_pred = y_pred.permute(1, 0, 2)
-
-            loss = ctc_loss(y_pred, y, input_lengths, output_lengths)
-
-            loss.backward()
-            optimizer.step()
-
-        writer.add_scalar("training/loss", loss.item(), epoch)
-
-        if epoch % 10 == 0:
-            torch.save(model.state_dict(), f"models/{epoch:06}.pt")
-
-        print(prediction_to_str(y[0]))
-        print(prediction_to_str(m))
-        print(loss.item())
-        print()
-        epoch += 1
