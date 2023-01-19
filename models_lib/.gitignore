@@ -1,0 +1,6 @@
+*.pyc
+*.wav
+*.out
+models/
+runs/
+models_*/
