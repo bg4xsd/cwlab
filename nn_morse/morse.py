@@ -90,16 +90,21 @@ ALPHABET = " " + "".join(MORSE_CODE_DICT.keys())
 def get_spectrogram(samples):
     # 250 units/min，也就是 60 sec/250unit, 240ms/unit @ 5WPM，
     # 120ms/unit @ 10WPM，60ms/unit @20WPM，30ms/unit @40WPM。
-    # 24ms/unit @50WPM,
-    # If we use 20ms, the function can deal with CW fast than @@50WPM。
+    # 24ms/unit @50WPM, 这个窗口勉强覆盖到 50 WPM， 应该是够用了。
     # Resolution = windows size  / sample rate
     # If windows size is  256, 256/6000=0.043, is  43ms
     # So, the windows size = resolution x sample rate
     # Aslo, we can enlarge or reduce it.
     # Ref : https://blog.csdn.net/qq_29884019/article/details/106177650
-    window_length = int(0.02 * SAMPLE_FREQ)  # 20 ms windows
+    window_length = int(0.02 * SAMPLE_FREQ * 4)  # 80 ms windows
 
-    _, _, s = signal.spectrogram(samples, nperseg=window_length, noverlap=0)
+    # Ref : https://blog.csdn.net/zhuoqingjoking97298/article/details/122634775
+
+    # _, _, s = signal.spectrogram(samples, fs= SAMPLE_FREQ, nperseg=window_length, noverlap=0)
+    _, _, s = signal.spectrogram(
+        samples, nperseg=window_length, noverlap=window_length // 8
+    )
+    # print("s....", s.shape)
     return s
 
 
@@ -117,8 +122,8 @@ def generate_sample(
     # More difficult for NN
     #
     # 设置的过宽，会导致dot，dash无法识别，现在缩小的波动范围
-    sl = 0.5  # scale low limit，原来是0.7
-    su = 2.0  # scale up limit，原来是2
+    sl = 0.75  # scale low limit，原来是0.7
+    su = 1.5  # scale up limit，原来是2
 
     def get_dot():
         scale = np.clip(np.random.normal(1, 0.2), sl, su)
@@ -208,26 +213,25 @@ if __name__ == "__main__":
     from scipy.io.wavfile import write
     import matplotlib.pyplot as plt
 
-    debug = False
+    length = random.randrange(10, 20)
+    pitch = random.randrange(100, 950)
+    wpm = random.randrange(10, 30)
+    noise_power = random.randrange(0, 200)
+    amplitude = random.randrange(10, 150)
 
-    if not debug:
-        length = random.randrange(10, 20)
-        pitch = random.randrange(100, 950)
-        wpm = random.randrange(10, 30)
-        noise_power = random.randrange(0, 200)
-        amplitude = random.randrange(10, 150)
-
-        s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
-    else:
-        length = 2
-        pitch = 650
-        wpm = 20
-        noise_power = 0
-        amplitude = 50
-        # s = 'paris'
-        s = None
+    # s = "CQ CQ CQ DE BG4XSD BG4XSD PSE K E E"
+    # length = 2
+    # pitch = 650
+    # wpm = 20
+    # noise_power = 10
+    # amplitude = 50
+    # s = 'paris'
+    s = None
+    s = 'cq cq'
     samples, spec, y = generate_sample(length, pitch, wpm, noise_power, amplitude, s)
+    # print("Samples",samples)
     print("Spec shape is : ", spec.shape)
+    # print("Spec shape is : ", spec[1])
     print(f"pitch: {pitch} wpm: {wpm} noise: {noise_power} amplitude: {amplitude}")
     print(
         "sentence is :",
@@ -251,8 +255,8 @@ if __name__ == "__main__":
         + str(amplitude)
         + ".wav"
     )
-    write("../temp/" + fname, SAMPLE_FREQ, samples)
-    # write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
+    # write("../temp/" + fname, SAMPLE_FREQ, samples)
+    write("../temp/testaudio.wav", SAMPLE_FREQ, samples)
 
     plt.figure()
     plt.pcolormesh(spec)

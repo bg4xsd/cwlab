@@ -124,7 +124,7 @@ if __name__ == "__main__":
     print("Number of params", model.count_parameters())
 
     # Lower learning rate to 1e-4 after about 1500 epochs
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = optim.Adam(model.parameters(), lr=1e-5)
     # optimizer = optim.Adam(model.parameters(), lr=1e-4)
     ctc_loss = nn.CTCLoss()
 
@@ -138,14 +138,14 @@ if __name__ == "__main__":
     random.seed(0)
 
     # epoch = 1500 # modify with lr=1e-4
-    epoch = 0
+    epoch = 3000
 
     # Resume training
     if epoch != 0:
         model.load_state_dict(torch.load(f"models/{epoch:06}.pt", map_location=device))
 
     model.train()
-    while epoch <= 1500:
+    while epoch <= 5000:
         # if epoch % 200 == 0:   # every 1500 epoch, update lr rate
         #     for params in optimizer.param_groups:
         #         # Find in the params list，update the lr = lr * 0.9
