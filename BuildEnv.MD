@@ -42,6 +42,9 @@ Create virtual env by use miniconda
 
    `pip freeze > requirements.txt`
 
+
+   `pip list --format=freeze > requirements.txt`
+
       or
 
    `pipreqs ./ --encoding=utf8`
