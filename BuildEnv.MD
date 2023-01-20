@@ -55,4 +55,4 @@ Create virtual env by use miniconda
       Or,  using another source that faster
    `pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r  requirements.txt`
 
-Last update by BFcat @ 2022.12.10
+Last update by BFcat @ 2023.01.20
