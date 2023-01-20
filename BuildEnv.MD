@@ -49,6 +49,9 @@ Create virtual env by use miniconda
 
    `pipreqs ./ --encoding=utf8`
 
+   pipreqs does not work well.
+
+
    b) Import evn
 
    `pip install -r requirements.txt`
