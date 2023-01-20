@@ -20,12 +20,12 @@
 
 **Release 1.0**
 
-1. Change the morse dictionary, add some useful procedural signals, also called ProSigns.
+1. Change the morse dictionary, add some useful procedural signals, also called ProSigns. At last, the dictionary has 59 chars.
 
-2. Adjust the project structure, and prepare to add more functions. Change decoder, add main_pro.py for batching traing work.
+2. Adjust the project structure, and prepare to add more functions. Change decoder, adjust the main function for batching traing work.
 
-3. The main.py, for the MLP plus LSTM network structure is kept unchanged, keep for comparing. It seems pd0wm's nn-morse is strong enough, faster training, smaller network. I have to say that pd0wm's work is very GOOD.
+3. The decoder.py, for the Dense-LSTM-Dense(DLD) network structure is kept unchanged, keeping for further comparing. It seems pd0wm's nn-morse is strong enough, faster training, smaller network. I have to say that pd0wm's work is very GOOD. In future release, I will try other neural network structure.
 
 Just for fun,  keep it simple.
 
-By BFcat @  2022.12.10
+By BFcat @  2023.01.20
