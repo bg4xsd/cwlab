@@ -3,6 +3,7 @@
 run_vscode.cmd
 batch_jobs.sh
 temp/
+data、
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
